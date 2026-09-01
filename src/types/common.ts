@@ -3,7 +3,7 @@
  *
  * Everything here describes JSON as it comes off the wire, so all timestamps are
  * strings rather than `Date`. (Both existing frontends declare a few of these as
- * `Date`, which is wrong — `JSON.parse` never produces `Date` instances.)
+ * `Date`, which is wrong - `JSON.parse` never produces `Date` instances.)
  */
 
 /** Calendar date, `YYYY-MM-DD`. */
@@ -15,7 +15,7 @@ export type IsoDateTime = string;
 /** Time of day, `HH:MM:SS`. */
 export type IsoTime = string;
 
-/** Which parliament a request is scoped to — the `{at|eu}` path segment. */
+/** Which parliament a request is scoped to - the `{at|eu}` path segment. */
 export type Country = "at" | "eu";
 
 /** Legislative period identifier, e.g. `"XXVII"`. */

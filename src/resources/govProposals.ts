@@ -22,6 +22,6 @@ export class GovProposalsResource extends Resource {
     });
   }
 
-  // Note: there is no paginated `live` listing for proposals — the route is
+  // Note: there is no paginated `live` listing for proposals - the route is
   // commented out in somes-api/src/routes/proposals.rs. Use `search` instead.
 }

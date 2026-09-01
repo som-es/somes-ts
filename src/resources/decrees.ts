@@ -18,6 +18,6 @@ export class DecreesResource extends Resource {
     return this.http.get<DecreesWithMaxPage>(decreesPath(this.country, "/search"), { query });
   }
 
-  // Note: there is no paginated listing for decrees — both the `live` route and
+  // Note: there is no paginated listing for decrees - both the `live` route and
   // the older `decrees_per_page` route are unmounted server-side. Use `search`.
 }

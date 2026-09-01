@@ -5,7 +5,7 @@ import { recordingFetch } from "../helpers/recordingFetch";
 
 /**
  * Every authenticated method resolves the token lazily, so a missing token must
- * surface as a *rejected promise* rather than a synchronous throw — otherwise
+ * surface as a *rejected promise* rather than a synchronous throw - otherwise
  * `client.foo().catch(...)` blows up at the call site instead of being handled.
  */
 function callsRequiringAToken(somes: SomesClient): Record<string, () => Promise<unknown>> {
@@ -67,7 +67,7 @@ describe("authenticated methods without a token", () => {
   for (const [name, call] of Object.entries(callsRequiringAToken(somes))) {
     it(`${name} rejects rather than throwing synchronously`, async () => {
       let promise: Promise<unknown>;
-      // Calling must not throw here — only the returned promise may reject.
+      // Calling must not throw here - only the returned promise may reject.
       expect(() => (promise = call())).not.toThrow();
       await expect(promise!).rejects.toBeInstanceOf(MissingTokenError);
     });

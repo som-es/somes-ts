@@ -104,7 +104,7 @@ export interface IssuedProposal {
 /**
  * A delegate's named vote as returned inside `GeneralDelegateInfo`.
  *
- * Note this is a different shape from the `NamedVote` nested in a vote result —
+ * Note this is a different shape from the `NamedVote` nested in a vote result -
  * the frontends declare both under the same name, with the second declaration
  * silently overriding the first. See `NamedVote` in `./voteResult`.
  */

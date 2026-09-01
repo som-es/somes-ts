@@ -17,7 +17,7 @@ import { Resource } from "./base";
 export class AccountResource extends Resource {
   /** The canonical user record. Note the JWT's claims are not kept in sync with this. */
   async me(): Promise<ExtendedUserInfo> {
-    return this.http.get<ExtendedUserInfo>(userPath(this.country, "/"), { token: this.token() });
+    return this.http.get<ExtendedUserInfo>(userPath(this.country, ""), { token: this.token() });
   }
 
   /** Irreversible. The stored token is cleared on success. */

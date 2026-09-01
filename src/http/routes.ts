@@ -52,12 +52,12 @@ export const statisticsPath = (country: Country, path: string): string =>
  * Routes the existing frontends call that are **not mounted** by `somes-api`,
  * kept here as documentation so they don't get reintroduced:
  *
- * - `GET  /api/{country}/delegate_interests`            — never mounted
- * - `GET  /api/{country}/v1/delegates/delegate_qa/{id}` — commented out in `delegates.rs`
- * - `POST /api/{country}/v1/gov_proposals/live`         — commented out in `proposals.rs`
- * - `POST /api/{country}/v1/decrees/live`               — commented out in `decrees.rs`
- * - `POST /api/{country}/decrees_per_page`              — never mounted
- * - `GET  /api/{country}/quizzes`                       — mounted on `/api/quizzes`, not per-country
+ * - `GET  /api/{country}/delegate_interests`            - never mounted
+ * - `GET  /api/{country}/v1/delegates/delegate_qa/{id}` - commented out in `delegates.rs`
+ * - `POST /api/{country}/v1/gov_proposals/live`         - commented out in `proposals.rs`
+ * - `POST /api/{country}/v1/decrees/live`               - commented out in `decrees.rs`
+ * - `POST /api/{country}/decrees_per_page`              - never mounted
+ * - `GET  /api/{country}/quizzes`                       - mounted on `/api/quizzes`, not per-country
  *
  * `delegate_qa` data is still reachable: it comes back inside
  * `GET /v1/delegates/extend/{id}` as `GeneralDelegateInfo.delegate_qa`.
@@ -77,7 +77,7 @@ export const UNMOUNTED_ROUTES = [
  * definitions) in `somes-frontend` and `somes-mobile-app`; several of these
  * have a wrapper defined in one or both apps that is never invoked.
  *
- * Add the wrapper back if a consumer genuinely needs it — the types and route
+ * Add the wrapper back if a consumer genuinely needs it - the types and route
  * builders are all still here.
  */
 export const UNUSED_ROUTES = [

@@ -46,7 +46,7 @@ export class AuthClient {
   async login(email: string, otp: string): Promise<string> {
     const response = await this.http.post<JwtInfoWire>(loginPath(this.country), {
       email,
-      password: otp,
+      password: otp.toUpperCase(),
       hash_email: null,
     });
     await this.tokenStore.set(response.access_token);
