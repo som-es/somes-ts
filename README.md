@@ -5,22 +5,77 @@ Shared TypeScript library for authentication and API calls.
 ## Usage
 
 ```ts
-import { SomesClient, TokenStore } from "@som-es/somes-ts";
+import { ApiError, SomesClient, TokenPersistence, TokenStore } from "@som-es/somes-ts";
+import { readFile, unlink, writeFile } from "node:fs/promises";
+import * as readline from "node:readline/promises";
 
-const somes = new SomesClient({
-  baseUrl: "https://somes.at",
-  country: "at", // or "eu"
-  tokenStore: new TokenStore(myPlatformStorage),
+class DiskTokenPersistence implements TokenPersistence {
+  constructor(private readonly path: string) {}
+
+  async load(): Promise<string | null> {
+    try {
+      return await readFile(this.path, {
+        encoding: "utf-8"
+      });
+    } catch (e) {
+      return null
+    }
+  }
+  save(token: string): Promise<void> {
+    return writeFile(this.path, token, {
+      encoding: "utf-8"
+    });
+  }
+  clear(): Promise<void> {
+    return unlink(this.path);
+  }
+}
+
+const somes = new SomesClient({ baseUrl: "https://somes.at", country: "at", tokenStore: new TokenStore(new DiskTokenPersistence("token.txt")) });
+
+async function main() {
+  const parties = await somes.reference.parties();
+  console.log(`parties: ${parties.map((p) => p.name).join(", ")}`);
+
+  const delegates = await somes.delegates.allActive();
+  console.log(`active delegates: ${delegates.length}`);
+
+  const seats = await somes.reference.seats();
+  console.log(`seat map has ${seats.size} parties`);
+
+  await somes.load();
+
+  if (!somes.auth.getAccessToken()) {
+    const rl = readline.createInterface({
+      input: process.stdin,
+      output: process.stdout
+    })
+    const email = await rl.question("Enter E-Mail: ");
+    await somes.auth.requestOtp(email);
+    const otp = await rl.question("Enter OTP: ");
+    rl.close();
+    await somes.auth.login(email, otp);
+  }
+
+  console.log(await somes.account.mailSendInfo());
+  console.log(await somes.account.me());
+
+  try {
+    await somes.decrees.byRisId("does-not-exist");
+  } catch (error) {
+    if (error instanceof ApiError) {
+      console.log(`expected ApiError: status=${error.status} field=${error.field}`);
+    } else {
+      throw error;
+    }
+  }
+}
+
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
 });
 
-await somes.load(); // rehydrate a persisted token
-
-await somes.auth.requestOtp("me@example.com"); // emails a one-time code
-await somes.auth.login("me@example.com", code); // returns and stores the JWT
-
-const delegates = await somes.delegates.allActive();
-const votes = await somes.voteResults.page(1, filter);
-const me = await somes.account.me();
 ```
 
 Failures throw `ApiError`, carrying the server's `status`, `errorType`, `field` and
