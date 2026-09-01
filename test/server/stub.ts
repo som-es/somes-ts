@@ -257,7 +257,10 @@ export function startStubServer(): Promise<StubServer> {
   const server: Server = createServer((req, res) => {
     void (async () => {
       const url = new URL(req.url ?? "/", "http://localhost");
-      const authRoute = /^\/api\/(at|eu)\/v1\/user(\/login|\/renew_token|\/?)$/.exec(url.pathname);
+      // Deliberately exact: a trailing slash is *not* accepted, because the real
+      // server 404s on `/v1/user/` (verified against production). Matching
+      // loosely here would let path bugs pass unnoticed.
+      const authRoute = /^\/api\/(at|eu)\/v1\/user(\/login|\/renew_token|)$/.exec(url.pathname);
 
       if (!authRoute) {
         sendError(res, 404, "Not found", "GenericErrorResponse", "NotFound");
@@ -285,7 +288,7 @@ export function startStubServer(): Promise<StubServer> {
         return;
       }
 
-      if ((action === "/" || action === "") && req.method === "GET") {
+      if (action === "" && req.method === "GET") {
         handleAuthed(state, req, res, (user) => {
           sendJson(res, 200, {
             id: user.id,

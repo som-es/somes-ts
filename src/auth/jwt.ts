@@ -21,7 +21,18 @@ export interface DecodedJwt {
 function decodeSegment<T>(segment: string): T {
   const base64 = segment.replace(/-/g, "+").replace(/_/g, "/");
   const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), "=");
-  return JSON.parse(atob(padded)) as T;
+
+  // `atob` yields one char per byte (latin1), which mangles any multi-byte
+  // UTF-8 in the claims — `sub` carries the user's email. Re-interpret the
+  // bytes as UTF-8. Done with percent-decoding rather than `TextDecoder` so
+  // this keeps working on React Native runtimes that lack it.
+  const binary = atob(padded);
+  let percentEncoded = "";
+  for (let i = 0; i < binary.length; i++) {
+    percentEncoded += `%${binary.charCodeAt(i).toString(16).padStart(2, "0")}`;
+  }
+
+  return JSON.parse(decodeURIComponent(percentEncoded)) as T;
 }
 
 export function decodeJwt(token: string): DecodedJwt {

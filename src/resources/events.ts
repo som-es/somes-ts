@@ -4,8 +4,12 @@ import { Resource } from "./base";
 
 /** Community events. Listing is public; all mutations require an admin token. */
 export class EventsResource extends Resource {
+  /**
+   * The server mounts this as `/v1/events` with no trailing slash; requesting
+   * `/v1/events/` returns 404.
+   */
   list(): Promise<SomesEvent[]> {
-    return this.http.get<SomesEvent[]>(eventsPath(this.country, "/"));
+    return this.http.get<SomesEvent[]>(eventsPath(this.country, ""));
   }
 
   /** Admin only. `event.id` is ignored; the assigned id is returned. */
