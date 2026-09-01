@@ -1,0 +1,10 @@
+export type * from "./aiSummary";
+export type * from "./common";
+export type * from "./decree";
+export type * from "./delegate";
+export type * from "./govProposal";
+export type * from "./misc";
+export type * from "./plenary";
+export type * from "./speech";
+export type * from "./user";
+export type * from "./voteResult";

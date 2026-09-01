@@ -26,15 +26,54 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Thrown instead of issuing a request that would certainly fail, when an
+ * authenticated call is attempted with no token stored. `status` is 0 because
+ * the request never left the client.
+ */
+export class MissingTokenError extends ApiError {
+  constructor() {
+    super("No access token", 0, "AuthError", "MissingToken", null);
+    this.name = "MissingTokenError";
+  }
+}
+
 export interface HttpClientOptions {
   baseUrl: string;
   fetch?: typeof fetch;
 }
 
+/**
+ * Query-string values. Arrays are serialized as repeated keys, and
+ * `undefined`/`null` entries are dropped rather than sent as empty strings.
+ */
+export type QueryValue = string | number | boolean | null | undefined;
+export type QueryParams = Record<string, QueryValue | readonly QueryValue[]>;
+
 export interface RequestOptions {
   method?: string;
   body?: unknown;
   token?: string | null;
+  query?: QueryParams;
+}
+
+interface AuthOptions {
+  token?: string | null;
+  query?: QueryParams;
+}
+
+export function buildQueryString(query: QueryParams): string {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    const values = Array.isArray(value) ? value : [value as QueryValue];
+    for (const entry of values) {
+      if (entry !== undefined && entry !== null) {
+        params.append(key, String(entry));
+      }
+    }
+  }
+  const serialized = params.toString();
+  return serialized.length > 0 ? `?${serialized}` : "";
 }
 
 export class HttpClient {
@@ -55,7 +94,8 @@ export class HttpClient {
       headers.set("Authorization", `Bearer ${options.token}`);
     }
 
-    const response = await this.fetchFn(`${this.baseUrl}${path}`, {
+    const query = options.query ? buildQueryString(options.query) : "";
+    const response = await this.fetchFn(`${this.baseUrl}${path}${query}`, {
       method: options.method ?? "GET",
       headers,
       body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
@@ -85,11 +125,19 @@ export class HttpClient {
     return responseBody as T;
   }
 
-  get<T>(path: string, options?: { token?: string | null }): Promise<T> {
-    return this.request<T>(path, { method: "GET", token: options?.token });
+  get<T>(path: string, options?: AuthOptions): Promise<T> {
+    return this.request<T>(path, { ...options, method: "GET" });
   }
 
-  post<T>(path: string, body?: unknown, options?: { token?: string | null }): Promise<T> {
-    return this.request<T>(path, { method: "POST", body, token: options?.token });
+  post<T>(path: string, body?: unknown, options?: AuthOptions): Promise<T> {
+    return this.request<T>(path, { ...options, method: "POST", body });
+  }
+
+  put<T>(path: string, body?: unknown, options?: AuthOptions): Promise<T> {
+    return this.request<T>(path, { ...options, method: "PUT", body });
+  }
+
+  delete<T>(path: string, body?: unknown, options?: AuthOptions): Promise<T> {
+    return this.request<T>(path, { ...options, method: "DELETE", body });
   }
 }

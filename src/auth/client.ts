@@ -1,19 +1,14 @@
 import { HttpClient } from "../http/client";
+import { userPath } from "../http/routes";
+import type { Country } from "../types/common";
 import { TokenStore } from "./store";
-
-export type Country = "at" | "eu";
 
 interface JwtInfoWire {
   access_token: string;
 }
 
-function loginPath(country: Country): string {
-  return `/api/${country}/v1/user/login`;
-}
-
-function renewTokenPath(country: Country): string {
-  return `/api/${country}/v1/user/renew_token`;
-}
+const loginPath = (country: Country): string => userPath(country, "/login");
+const renewTokenPath = (country: Country): string => userPath(country, "/renew_token");
 
 export interface AuthClientOptions {
   baseUrl: string;
