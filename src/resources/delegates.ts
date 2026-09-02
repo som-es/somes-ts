@@ -61,10 +61,15 @@ export class DelegatesResource extends Resource {
    * Extended profile: interests, stances, absences, named votes and the
    * delegate Q&A (the standalone `delegate_qa` route is not mounted server-side,
    * so this is the only way to reach that data).
+   *
+   * `language` selects the language of the returned topic names and is
+   * **required** by the server — omitting it fails the query deserialization
+   * with a 400, so it is defaulted here rather than left to the caller.
    */
-  extended(delegateId: number): Promise<GeneralDelegateInfo> {
+  extended(delegateId: number, language = "de"): Promise<GeneralDelegateInfo> {
     return this.http.get<GeneralDelegateInfo>(
       delegatesPath(this.country, `/extend/${delegateId}`),
+      { query: { language } },
     );
   }
 

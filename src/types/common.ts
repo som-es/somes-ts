@@ -49,7 +49,14 @@ export interface Topic {
 }
 
 export interface UniqueTopic {
-  id: number;
+  /**
+   * A 64-bit hash serialised as a string, e.g. `"6838196640260527284"`.
+   *
+   * Must stay a string: values exceed 2^53, so `Number(id)` silently loses
+   * precision and sends back an id the server will not match. The Rust struct
+   * says `i32` and both frontends say `number`; production says otherwise.
+   */
+  id: string;
   topic: string;
 }
 

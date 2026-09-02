@@ -26,6 +26,25 @@ describe("requestOtp", () => {
     expect(client.getAccessToken()).toBeNull();
   });
 
+  it("succeeds again while a code is already pending", async () => {
+    const email = freshEmail();
+    await client.requestOtp(email);
+
+    // The user taps "send code" twice, or backs out and returns inside the TTL.
+    // The second request takes the server's verify branch, where a `null`
+    // password would come back as WrongOtp before anything was typed.
+    await expect(client.requestOtp(email)).resolves.toBeUndefined();
+    expect(client.getAccessToken()).toBeNull();
+  });
+
+  it("leaves the pending code usable after re-requesting", async () => {
+    const email = freshEmail();
+    await client.requestOtp(email);
+    await client.requestOtp(email);
+
+    await expect(client.login(email, STUB_OTP)).resolves.not.toBe("");
+  });
+
   it("rejects a malformed email address", async () => {
     await expect(client.requestOtp("not-an-email")).rejects.toBeInstanceOf(ApiError);
   });

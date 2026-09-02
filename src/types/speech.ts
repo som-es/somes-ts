@@ -1,5 +1,6 @@
 import type { CriticalAnalysis, Glossary } from "./aiSummary";
 import type { IsoDateTime, IsoTime } from "./common";
+import type { ReceivedInterjection } from "./delegate";
 
 export type SpeechAbortReason = "NoSpeechProvidedInContext" | "None";
 
@@ -75,9 +76,13 @@ export interface DbSpeechRelations {
 
 export interface FullSpeech {
   id: number;
+  debate_id: number;
+  /** Also available as `speech.delegate_id`; surfaced here so callers need not reach in. */
+  delegate_id: number;
   speech: DbSpeechWithLink;
   ai_summary: DbSpeechAiSummary | null;
   relations: DbSpeechRelations[];
+  received_interjections: ReceivedInterjection[];
 }
 
 export interface SpeechAiSummarizeOutput {

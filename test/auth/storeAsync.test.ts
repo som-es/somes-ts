@@ -142,6 +142,16 @@ describe("subscriptions", () => {
     expect(second).toHaveBeenCalledOnce();
   });
 
+  it("returns a void unsubscribe, as useSyncExternalStore requires", () => {
+    const store = new TokenStore(new AsyncPersistence());
+
+    const unsubscribe = store.subscribe(() => undefined);
+
+    // Returning `Set.delete`'s boolean would force every React consumer to
+    // wrap this to satisfy the `() => void` signature.
+    expect(unsubscribe()).toBeUndefined();
+  });
+
   it("keeps other subscribers after one unsubscribes", async () => {
     const store = new TokenStore(new AsyncPersistence());
     const kept = vi.fn();

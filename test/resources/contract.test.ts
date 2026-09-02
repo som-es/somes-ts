@@ -74,14 +74,15 @@ const CONTRACTS: Contract[] = [
     call: (s) => s.auth.requestOtp("me@example.com"),
     method: "POST",
     path: "/api/at/v1/user/login",
-    body: { email: "me@example.com", password: null, hash_email: null },
+    // `""`, not `null`: see AuthClient.requestOtp.
+    body: { email: "me@example.com", password: "", hash_email: null },
   },
   {
     name: "auth.requestOtp (hashed email)",
     call: (s) => s.auth.requestOtp("me@example.com", { hashEmail: true }),
     method: "POST",
     path: "/api/at/v1/user/login",
-    body: { email: "me@example.com", password: null, hash_email: true },
+    body: { email: "me@example.com", password: "", hash_email: true },
   },
   {
     name: "auth.login",
@@ -125,18 +126,18 @@ const CONTRACTS: Contract[] = [
   },
   {
     name: "account.addTopic",
-    call: (s) => s.account.addTopic({ id: 4, topic: "Umwelt" }),
+    call: (s) => s.account.addTopic({ id: "4836563141530063945", topic: "Umwelt" }),
     method: "POST",
     path: "/api/at/v1/user/topic_selection",
-    body: { id: 4, topic: "Umwelt" },
+    body: { id: "4836563141530063945", topic: "Umwelt" },
     auth: true,
   },
   {
     name: "account.removeTopic",
-    call: (s) => s.account.removeTopic({ id: 4, topic: "Umwelt" }),
+    call: (s) => s.account.removeTopic({ id: "4836563141530063945", topic: "Umwelt" }),
     method: "DELETE",
     path: "/api/at/v1/user/topic_selection",
-    body: { id: 4, topic: "Umwelt" },
+    body: { id: "4836563141530063945", topic: "Umwelt" },
     auth: true,
   },
   {
@@ -264,10 +265,19 @@ const CONTRACTS: Contract[] = [
     query: { at: "2026-01-31", period: "XXVII" },
   },
   {
+    // `language` is required; the endpoint 400s without it.
     name: "delegates.extended",
     call: (s) => s.delegates.extended(42),
     method: "GET",
     path: "/api/at/v1/delegates/extend/42",
+    query: { language: "de" },
+  },
+  {
+    name: "delegates.extended (explicit language)",
+    call: (s) => s.delegates.extended(42, "en"),
+    method: "GET",
+    path: "/api/at/v1/delegates/extend/42",
+    query: { language: "en" },
   },
   {
     name: "delegates.speeches",

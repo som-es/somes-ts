@@ -63,9 +63,18 @@ export class TokenStore {
     return this.set(null);
   }
 
+  /**
+   * Registers a listener and returns an unsubscribe function.
+   *
+   * The unsubscribe returns nothing on purpose: `useSyncExternalStore` requires
+   * a `() => void`, and returning `Set.delete`'s boolean would force every
+   * React consumer to wrap it.
+   */
   subscribe(listener: TokenListener): () => void {
     this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
   }
 
   private emit(): void {

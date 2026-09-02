@@ -57,12 +57,14 @@ describe("login", () => {
 });
 
 describe("requestOtp", () => {
-  it("sends a null password to trigger step one", async () => {
+  it("sends an empty password, not null, to trigger step one", async () => {
     await client.requestOtp("me@example.com");
 
+    // `null` takes the handler's "verify an OTP" branch and is rejected as
+    // WrongOtp whenever a code is already pending; `""` re-sends the mail.
     expect(http.only().body).toEqual({
       email: "me@example.com",
-      password: null,
+      password: "",
       hash_email: null,
     });
   });

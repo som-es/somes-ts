@@ -49,6 +49,8 @@ export interface DelegatesWithMaxPage extends PaginatedWithTimestamp {
 
 export interface InterestShare {
   topic: string;
+  /** 64-bit hash serialised as a string; the only stable key for the row. */
+  topic_id: string;
   total_share: number;
   occurences: number;
   self_share: number;
@@ -59,18 +61,37 @@ export interface DelegateQA {
   answer: string;
 }
 
+/**
+ * A position on the two-dimensional compass, given as four named magnitudes
+ * rather than signed axes. `count` is the number of stances that fed into it.
+ */
+export interface PoliticalScore {
+  socialist: number;
+  capitalist: number;
+  liberal: number;
+  authoritarian: number;
+  count: number;
+}
+
+/**
+ * The compass was rebuilt: the old signed `is_left`/`is_not_left` pair became
+ * the four named magnitudes in {@link PoliticalScore}, wrapped in
+ * `total_score`, with the per-topic breakdown moved inside as
+ * `scores_by_topic`. The Rust sources and both frontends still describe the
+ * old shape; production returns this one.
+ */
 export interface PoliticalPosition {
-  delegate_id: number | null;
-  is_left: number;
-  is_not_left: number;
-  is_liberal: number;
-  is_not_liberal: number;
-  neutral_count: number;
+  total_score: PoliticalScore;
+  scores_by_topic: StanceTopicScore[];
 }
 
 export interface StanceTopicScore {
   topic: string;
+  /** 64-bit hash serialised as a string; never parse it as a number. */
+  topic_id: string;
+  /** Signed position on the topic. */
   score: number;
+  broken_down_score: PoliticalScore;
 }
 
 export interface StanceTopicInfluences {
@@ -113,9 +134,13 @@ export interface DelegateNamedVote {
   was_absent: boolean | null;
   legis_init_id: number;
   named_vote_info_id: number;
-  date: IsoDateTime;
+  date: IsoDate;
 }
 
+/**
+ * Returned by `delegates.extended()`. There is no `left_right_stances` key —
+ * the per-topic scores live in `political_position.scores_by_topic`.
+ */
 export interface GeneralDelegateInfo {
   interests: InterestShare[];
   detailed_interests: InterestShare[];
@@ -125,7 +150,6 @@ export interface GeneralDelegateInfo {
   named_votes: DelegateNamedVote[];
   stance_topic_influences: StanceTopicInfluences[];
   stance_topic_scores: StanceTopicScore[];
-  left_right_stances: StanceTopicScore[];
   received_call_to_orders: CallToOrder[];
   issued_proposals: IssuedProposal[];
 }
@@ -138,15 +162,30 @@ export interface DelegateMatch {
   manually_matched: boolean | null;
 }
 
+/** An interjection as returned by the `interjections/{made,received}` endpoints. */
 export interface Interjection {
   interjection_text: string | null;
   interjector_delegate_id: number;
   speaker_delegate_id: number;
-  date: IsoDate;
+  date: IsoDateTime;
   plenar_speech_id: number;
   rel_start_idx: number;
   rel_end_idx: number;
   delegate_match: DelegateMatch;
+}
+
+/**
+ * The narrower form nested in `FullSpeech.received_interjections`: the speaker
+ * and date are implied by the surrounding speech, and the delegate match is
+ * reduced to its id.
+ */
+export interface ReceivedInterjection {
+  interjection_text: string | null;
+  interjector_delegate_id: number;
+  plenar_speech_id: number;
+  rel_start_idx: number;
+  rel_end_idx: number;
+  delegate_matching_id: number;
 }
 
 export interface InterjectionsWithMaxPage extends Paginated {

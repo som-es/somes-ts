@@ -12,8 +12,8 @@ function callsRequiringAToken(somes: SomesClient): Record<string, () => Promise<
   return {
     "account.me": () => somes.account.me(),
     "account.topics": () => somes.account.topics(),
-    "account.addTopic": () => somes.account.addTopic({ id: 1, topic: "x" }),
-    "account.removeTopic": () => somes.account.removeTopic({ id: 1, topic: "x" }),
+    "account.addTopic": () => somes.account.addTopic({ id: "4836563141530063945", topic: "x" }),
+    "account.removeTopic": () => somes.account.removeTopic({ id: "4836563141530063945", topic: "x" }),
     "account.mailSendInfo": () => somes.account.mailSendInfo(),
     "account.bookmarkedDelegates": () => somes.account.bookmarkedDelegates(),
     "account.addDelegateBookmark": () =>

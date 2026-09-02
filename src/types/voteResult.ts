@@ -37,12 +37,32 @@ export interface LegislativeInitiative {
   is_urgent: boolean;
 }
 
+/**
+ * How one party's members voted, as per-member counts.
+ *
+ * This replaced the older `{ fraction, infavor, legislative_initiatives_id }`
+ * shape, which is what both frontends and the Rust sources still describe but
+ * which no longer appears on the wire. The old fields are derivable: `fraction`
+ * is the sum of the four counts, and `infavor` is
+ * `infavor_count > against_count`.
+ */
 export interface Vote {
   party: string;
   code: string | null;
-  fraction: number;
-  infavor: boolean;
-  legislative_initiatives_id: number;
+  infavor_count: number;
+  against_count: number;
+  abstention_count: number;
+  absence_count: number;
+}
+
+/**
+ * Denormalised copy of a vote result's facets, used by the server's search
+ * index. Present on every vote result; not useful to clients, but typed
+ * because it is on the wire.
+ */
+export interface MeilisearchHelper {
+  votes: unknown[];
+  issuer_parties: string[];
 }
 
 /** A named (roll-call) vote cast by one delegate, as nested in a vote result. */
@@ -100,6 +120,7 @@ export interface VoteResult {
   referenced_by_others_ids: number[];
   references: Reference[] | null;
   ai_summary: DbAiSummary | null;
+  meilisearch_helper: MeilisearchHelper;
 }
 
 export interface VoteResultsWithMaxPage extends PaginatedWithTimestamp {

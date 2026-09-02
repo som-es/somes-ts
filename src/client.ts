@@ -1,4 +1,5 @@
 import { AuthClient } from "./auth/client";
+import { delegateImageUrl, getOAuthUrl, type OAuthUrlOptions } from "./auth/oauth";
 import { InMemoryTokenPersistence, TokenStore } from "./auth/store";
 import { HttpClient } from "./http/client";
 import { AccountResource } from "./resources/account";
@@ -47,8 +48,11 @@ export class SomesClient {
   readonly statistics: StatisticsResource;
   readonly voteResults: VoteResultsResource;
 
+  private readonly baseUrl: string;
+
   constructor(options: SomesClientOptions) {
     const country = options.country ?? "at";
+    this.baseUrl = options.baseUrl;
     this.tokenStore = options.tokenStore ?? new TokenStore(new InMemoryTokenPersistence());
 
     const http = new HttpClient({ baseUrl: options.baseUrl, fetch: options.fetch });
@@ -80,5 +84,15 @@ export class SomesClient {
   /** Loads any persisted token into memory. Call once at startup. */
   async load(): Promise<void> {
     await this.tokenStore.load();
+  }
+
+  /** URL that starts an OAuth flow, bound to this client's base URL. */
+  oauthUrl(provider: string, options?: OAuthUrlOptions): string {
+    return getOAuthUrl(this.baseUrl, provider, options);
+  }
+
+  /** Portrait URL for a delegate, bound to this client's base URL. */
+  delegateImageUrl(delegateId: number): string {
+    return delegateImageUrl(this.baseUrl, delegateId);
   }
 }

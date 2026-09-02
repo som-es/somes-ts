@@ -35,10 +35,19 @@ export class AuthClient {
     this.country = options.country ?? "at";
   }
 
+  /**
+   * Step one: asks the server to email a one-time code.
+   *
+   * The empty string is deliberate and must not be `null`. When a code is
+   * already pending for the address — the user asks twice, backs out and
+   * returns, or comes back inside the TTL — the handler takes its
+   * "verify an OTP" branch, where `null` is rejected as `WrongOtp` before the
+   * user has typed anything, while `""` re-answers "check your email".
+   */
   async requestOtp(email: string, options: { hashEmail?: boolean } = {}): Promise<void> {
     await this.http.post<JwtInfoWire>(loginPath(this.country), {
       email,
-      password: null,
+      password: "",
       hash_email: options.hashEmail ?? null,
     });
   }
