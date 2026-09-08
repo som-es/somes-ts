@@ -27,6 +27,9 @@ export const userPath = (country: Country, path = ""): string => v1Path(country,
 export const bookmarkPath = (country: Country, path: string): string =>
   userPath(country, `/bookmark${path}`);
 
+export const pushNotificationPath = (country: Country, path: string): string =>
+  userPath(country, `/push_notifications${path}`);
+
 export const delegatesPath = (country: Country, path: string): string =>
   v1Path(country, `/delegates${path}`);
 

@@ -28,6 +28,24 @@ function callsRequiringAToken(somes: SomesClient): Record<string, () => Promise<
     "account.removeVoteResultBookmark": () =>
       somes.account.removeVoteResultBookmark({ vote_result_id: 1 }),
     "account.deleteAccount": () => somes.account.deleteAccount(),
+    "account.registerPushToken": () =>
+      somes.account.registerPushToken("ExponentPushToken[abc]", "ios"),
+    "account.removePushToken": () => somes.account.removePushToken("ExponentPushToken[abc]"),
+    "account.pushTokens": () => somes.account.pushTokens(),
+    "account.notificationSettings": () => somes.account.notificationSettings(),
+    "account.updateNotificationSettings": () =>
+      somes.account.updateNotificationSettings({
+        platform: "ios",
+        send_new_vote_results: true,
+        send_new_vote_result_by_favo: false,
+        send_new_delegate_activity: false,
+        send_new_ministrial_prop: false,
+        send_new_ministrial_prop_by_favo: false,
+        send_new_decree: false,
+        send_new_decree_by_favo: false,
+        send_new_proposal: false,
+        send_new_proposal_by_favo: false,
+      }),
     "account.changeEmail": () => somes.account.changeEmail("a@b.com"),
     "account.verifyEmailChange": () => somes.account.verifyEmailChange("a@b.com", "1"),
     "account.anonymizeEmail": () => somes.account.anonymizeEmail(true),

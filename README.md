@@ -86,7 +86,7 @@ without making a request.
 
 - `src/http` - `HttpClient`/`ApiError`: a thin fetch wrapper that throws `ApiError` (carrying the API's `error`/`error_type`/`field`/`meta` shape) on non-2xx responses, plus the route builders in `routes.ts`.
 - `src/auth` - `AuthClient` for the passwordless email-OTP login flow (`requestOtp`/`login`/`renewToken`/`logout`), a pluggable `TokenStore` (sync cache + async persistence, so each app supplies its own backend - `expo-secure-store` on mobile, `localStorage` on web), and JWT decode/expiry helpers.
-- `src/resources` - one client per resource: `delegates`, `voteResults`, `govProposals`, `decrees`, `reference` (parties/seats/topics/periods/plenary calendar), `account` (profile, bookmarks, topic selection, mail preferences, email changes), `events`, `statistics`.
+- `src/resources` - one client per resource: `delegates`, `voteResults`, `govProposals`, `decrees`, `reference` (parties/seats/topics/periods/plenary calendar), `account` (profile, bookmarks, topic selection, mail preferences, email changes, push notification tokens/settings), `events`, `statistics`.
 - `src/types` - strongly typed wire models mirroring the Rust structs. Timestamps use documented `IsoDate`/`IsoDateTime`/`IsoTime` string aliases, since JSON never carries `Date`.
 - `src/client.ts` - `SomesClient`, wiring the above together behind one configured object.
 

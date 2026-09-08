@@ -1,4 +1,4 @@
-import { bookmarkPath, userPath } from "../http/routes";
+import { bookmarkPath, pushNotificationPath, userPath } from "../http/routes";
 import type { UniqueTopic } from "../types/common";
 import type {
   AnonymizeEmailResponse,
@@ -7,6 +7,9 @@ import type {
   ExtendedUserInfo,
   LegisInitFavo,
   MailSendInfo,
+  NotificationSettings,
+  PushPlatform,
+  PushTokenInfo,
 } from "../types/user";
 import { Resource } from "./base";
 
@@ -53,6 +56,41 @@ export class AccountResource extends Resource {
 
   async updateMailSendInfo(info: MailSendInfo): Promise<void> {
     await this.http.put(userPath(this.country, "/send_mail_info"), info, {
+      token: this.token(),
+    });
+  }
+
+  async registerPushToken(pushToken: string, platform: PushPlatform): Promise<void> {
+    await this.http.post(
+      pushNotificationPath(this.country, "/token"),
+      { push_token: pushToken, platform },
+      { token: this.token() },
+    );
+  }
+
+  async removePushToken(pushToken: string): Promise<void> {
+    await this.http.delete(
+      pushNotificationPath(this.country, "/token"),
+      { push_token: pushToken },
+      { token: this.token() },
+    );
+  }
+
+  async pushTokens(): Promise<PushTokenInfo[]> {
+    return this.http.get<PushTokenInfo[]>(pushNotificationPath(this.country, "/tokens"), {
+      token: this.token(),
+    });
+  }
+
+  async notificationSettings(platform?: PushPlatform): Promise<NotificationSettings> {
+    return this.http.get<NotificationSettings>(pushNotificationPath(this.country, "/settings"), {
+      token: this.token(),
+      query: platform ? { platform } : undefined,
+    });
+  }
+
+  async updateNotificationSettings(settings: NotificationSettings): Promise<void> {
+    await this.http.put(pushNotificationPath(this.country, "/settings"), settings, {
       token: this.token(),
     });
   }

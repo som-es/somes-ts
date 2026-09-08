@@ -41,3 +41,24 @@ export interface ChangeMailResponse {
 }
 
 export type AnonymizeEmailResponse = ChangeMailResponse;
+
+export type PushPlatform = "ios" | "android" | "web";
+
+export interface PushTokenInfo {
+  push_token: string;
+  platform: PushPlatform;
+  enabled: boolean;
+}
+
+export interface NotificationSettings {
+  platform: PushPlatform;
+  send_new_vote_results: boolean;
+  send_new_vote_result_by_favo: boolean;
+  send_new_delegate_activity: boolean;
+  send_new_ministrial_prop: boolean;
+  send_new_ministrial_prop_by_favo: boolean;
+  send_new_decree: boolean;
+  send_new_decree_by_favo: boolean;
+  send_new_proposal: boolean;
+  send_new_proposal_by_favo: boolean;
+}

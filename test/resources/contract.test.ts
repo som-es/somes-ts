@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { InMemoryTokenPersistence, TokenStore } from "../../src/auth/store";
 import { SomesClient } from "../../src/client";
-import type { MailSendInfo } from "../../src/types/user";
+import type { MailSendInfo, NotificationSettings } from "../../src/types/user";
 import { recordingFetch } from "../helpers/recordingFetch";
 
 /**
@@ -29,6 +29,19 @@ const MAIL_INFO: MailSendInfo = {
   send_new_decree_by_favo_mails: false,
   send_new_proposal_mails: false,
   send_new_proposal_by_favo_mails: false,
+};
+
+const PUSH_SETTINGS: NotificationSettings = {
+  platform: "ios",
+  send_new_vote_results: true,
+  send_new_vote_result_by_favo: false,
+  send_new_delegate_activity: false,
+  send_new_ministrial_prop: false,
+  send_new_ministrial_prop_by_favo: false,
+  send_new_decree: false,
+  send_new_decree_by_favo: false,
+  send_new_proposal: false,
+  send_new_proposal_by_favo: false,
 };
 
 const EVENT = {
@@ -153,6 +166,55 @@ const CONTRACTS: Contract[] = [
     method: "PUT",
     path: "/api/at/v1/user/send_mail_info",
     body: MAIL_INFO,
+    auth: true,
+  },
+  {
+    name: "account.registerPushToken",
+    call: (s) => s.account.registerPushToken("ExponentPushToken[abc]", "ios"),
+    method: "POST",
+    path: "/api/at/v1/user/push_notifications/token",
+    body: { push_token: "ExponentPushToken[abc]", platform: "ios" },
+    auth: true,
+  },
+  {
+    name: "account.removePushToken",
+    call: (s) => s.account.removePushToken("ExponentPushToken[abc]"),
+    method: "DELETE",
+    path: "/api/at/v1/user/push_notifications/token",
+    body: { push_token: "ExponentPushToken[abc]" },
+    auth: true,
+  },
+  {
+    name: "account.pushTokens",
+    call: (s) => s.account.pushTokens(),
+    method: "GET",
+    path: "/api/at/v1/user/push_notifications/tokens",
+    auth: true,
+    response: [],
+  },
+  {
+    name: "account.notificationSettings",
+    call: (s) => s.account.notificationSettings(),
+    method: "GET",
+    path: "/api/at/v1/user/push_notifications/settings",
+    auth: true,
+    response: PUSH_SETTINGS,
+  },
+  {
+    name: "account.notificationSettings (with platform)",
+    call: (s) => s.account.notificationSettings("android"),
+    method: "GET",
+    path: "/api/at/v1/user/push_notifications/settings",
+    query: { platform: "android" },
+    auth: true,
+    response: PUSH_SETTINGS,
+  },
+  {
+    name: "account.updateNotificationSettings",
+    call: (s) => s.account.updateNotificationSettings(PUSH_SETTINGS),
+    method: "PUT",
+    path: "/api/at/v1/user/push_notifications/settings",
+    body: PUSH_SETTINGS,
     auth: true,
   },
   {
