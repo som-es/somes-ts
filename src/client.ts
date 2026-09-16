@@ -5,6 +5,7 @@ import { HttpClient } from "./http/client";
 import { AccountResource } from "./resources/account";
 import type { ResourceContext } from "./resources/base";
 import { DecreesResource } from "./resources/decrees";
+import { DelegateQuestionsResource } from "./resources/delegateQuestions";
 import { DelegatesResource } from "./resources/delegates";
 import { EventsResource } from "./resources/events";
 import { GovProposalsResource } from "./resources/govProposals";
@@ -42,6 +43,7 @@ export class SomesClient {
   readonly account: AccountResource;
   readonly decrees: DecreesResource;
   readonly delegates: DelegatesResource;
+  readonly delegateQuestions: DelegateQuestionsResource;
   readonly events: EventsResource;
   readonly govProposals: GovProposalsResource;
   readonly reference: ReferenceResource;
@@ -74,6 +76,7 @@ export class SomesClient {
     this.account = new AccountResource(context);
     this.decrees = new DecreesResource(context);
     this.delegates = new DelegatesResource(context);
+    this.delegateQuestions = new DelegateQuestionsResource(context);
     this.events = new EventsResource(context);
     this.govProposals = new GovProposalsResource(context);
     this.reference = new ReferenceResource(context);

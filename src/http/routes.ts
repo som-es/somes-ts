@@ -36,6 +36,17 @@ export const delegatesPath = (country: Country, path: string): string =>
 export const govOfficialsPath = (country: Country, path: string): string =>
   delegatesPath(country, `/gov_officials${path}`);
 
+/**
+ * Delegate questions: ask a delegate a question, admin review/approve/reject,
+ * and the public Q&A archive. As of commit `efd17b84` ("Disable delegate qa
+ * for now") both mount points for this router
+ * (`somes-api/src/server.rs` and `somes-api/src/routes/delegates.rs`) are
+ * commented out, so these routes currently 404 - wrapped here anyway, ahead
+ * of the backend re-enabling them.
+ */
+export const delegateQuestionsPath = (country: Country, path: string): string =>
+  delegatesPath(country, `/questions${path}`);
+
 export const voteResultsPath = (country: Country, path: string): string =>
   v1Path(country, `/vote_results${path}`);
 

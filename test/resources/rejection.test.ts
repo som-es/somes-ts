@@ -73,6 +73,12 @@ function callsRequiringAToken(somes: SomesClient): Record<string, () => Promise<
         requires_registration: null,
       }),
     "events.remove": () => somes.events.remove(1),
+    "delegateQuestions.ask": () =>
+      somes.delegateQuestions.ask(42, { subject: "s", body: "b", eurovoc_topic_ids: [] }),
+    "delegateQuestions.pending": () => somes.delegateQuestions.pending(),
+    "delegateQuestions.approve": () => somes.delegateQuestions.approve(7),
+    "delegateQuestions.reject": () => somes.delegateQuestions.reject(7),
+    "delegateQuestions.update": () => somes.delegateQuestions.update(7, { subject: "s" }),
   };
 }
 

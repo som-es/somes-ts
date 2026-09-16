@@ -376,6 +376,84 @@ const CONTRACTS: Contract[] = [
     path: "/api/at/v1/delegates/gov_officials/extend/42",
   },
 
+  // ---- delegate questions -------------------------------------------------
+  // Currently unmounted server-side (see `delegateQuestionsPath`); requests
+  // are pinned against the Rust handlers regardless.
+  {
+    name: "delegateQuestions.all",
+    call: (s) => s.delegateQuestions.all(),
+    method: "GET",
+    path: "/api/at/v1/delegates/questions",
+    query: { language: "de" },
+  },
+  {
+    name: "delegateQuestions.byDelegate",
+    call: (s) => s.delegateQuestions.byDelegate(42),
+    method: "GET",
+    path: "/api/at/v1/delegates/questions/delegate/42",
+    query: { language: "de" },
+  },
+  {
+    name: "delegateQuestions.byId",
+    call: (s) => s.delegateQuestions.byId(7),
+    method: "GET",
+    path: "/api/at/v1/delegates/questions/7",
+    query: { language: "de" },
+  },
+  {
+    name: "delegateQuestions.recipient",
+    call: (s) => s.delegateQuestions.recipient(42),
+    method: "GET",
+    path: "/api/at/v1/delegates/questions/delegate/42/question_recipient",
+  },
+  {
+    name: "delegateQuestions.ask",
+    call: (s) =>
+      s.delegateQuestions.ask(42, {
+        subject: "Subject",
+        body: "Body",
+        eurovoc_topic_ids: ["123"],
+      }),
+    method: "POST",
+    path: "/api/at/v1/delegates/questions/delegate/42",
+    query: { language: "de" },
+    body: { subject: "Subject", body: "Body", eurovoc_topic_ids: ["123"] },
+    auth: true,
+  },
+  {
+    name: "delegateQuestions.pending",
+    call: (s) => s.delegateQuestions.pending(),
+    method: "GET",
+    path: "/api/at/v1/delegates/questions/pending",
+    query: { language: "de" },
+    auth: true,
+  },
+  {
+    name: "delegateQuestions.approve",
+    call: (s) => s.delegateQuestions.approve(7),
+    method: "POST",
+    path: "/api/at/v1/delegates/questions/7/approve",
+    query: { language: "de" },
+    auth: true,
+  },
+  {
+    name: "delegateQuestions.reject",
+    call: (s) => s.delegateQuestions.reject(7),
+    method: "POST",
+    path: "/api/at/v1/delegates/questions/7/reject",
+    query: { language: "de" },
+    auth: true,
+  },
+  {
+    name: "delegateQuestions.update",
+    call: (s) => s.delegateQuestions.update(7, { subject: "New subject" }),
+    method: "PATCH",
+    path: "/api/at/v1/delegates/questions/7",
+    query: { language: "de" },
+    body: { subject: "New subject" },
+    auth: true,
+  },
+
   // ---- vote results -----------------------------------------------------
   {
     name: "voteResults.latest",
@@ -686,6 +764,7 @@ describe("request contract", () => {
       "account",
       "decrees",
       "delegates",
+      "delegateQuestions",
       "events",
       "govProposals",
       "reference",
@@ -705,9 +784,9 @@ describe("request contract", () => {
       }
     }
 
-    // `delegates.search` builds its query dynamically and has a dedicated
-    // suite in paths.test.ts covering each filter combination.
-    expect(missing).toEqual(["delegates.search"]);
+    // `delegates.search` and `delegateQuestions.search` build their query
+    // dynamically and have dedicated suites covering each filter combination.
+    expect(missing).toEqual(["delegates.search", "delegateQuestions.search"]);
   });
 
   it("covers every statistics family", () => {

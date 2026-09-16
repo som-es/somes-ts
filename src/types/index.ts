@@ -2,6 +2,7 @@ export type * from "./aiSummary";
 export type * from "./common";
 export type * from "./decree";
 export type * from "./delegate";
+export type * from "./delegateQuestion";
 export type * from "./govProposal";
 export type * from "./misc";
 export type * from "./plenary";
