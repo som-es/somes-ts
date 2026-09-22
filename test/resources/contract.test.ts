@@ -380,6 +380,12 @@ const CONTRACTS: Contract[] = [
   // Currently unmounted server-side (see `delegateQuestionsPath`); requests
   // are pinned against the Rust handlers regardless.
   {
+    name: "delegateQuestions.status",
+    call: (s) => s.delegateQuestions.status(),
+    method: "GET",
+    path: "/api/questions/status",
+  },
+  {
     name: "delegateQuestions.all",
     call: (s) => s.delegateQuestions.all(),
     method: "GET",
