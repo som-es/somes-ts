@@ -33,6 +33,18 @@ export interface DelegateSearchOptions {
   hasActiveMandate?: boolean | null;
   /** Defaults to `active_gov_gps` when `onlyGovernment` is true, otherwise `active_gps`. */
   gpsField?: DelegateGpsField;
+  /**
+   * Filters `constituency[in]` by ISO 3166-1 alpha-3 country code (e.g.
+   * `"DEU"`). Only meaningful when the client is scoped to `"eu"`, where
+   * `constituency` holds the MEP's home member state — for `"at"`,
+   * `constituency` is an electoral district/`Land`, not a country, and this
+   * filter will silently match against district codes instead.
+   *
+   * To find which codes actually have delegates, derive the distinct
+   * `constituency` values from `allActive()` (or `allAtDate()`), the same way
+   * `somes-frontend` does — there's no dedicated facets endpoint.
+   */
+  countries?: readonly string[];
 }
 
 export class DelegatesResource extends Resource {
@@ -84,6 +96,7 @@ export class DelegatesResource extends Resource {
       includePreviousPartyMembership = true,
       hasActiveMandate = null,
       gpsField = onlyGovernment ? "active_gov_gps" : "active_gps",
+      countries = [],
     } = options;
 
     // The server takes a bracketed filter syntax rather than plain params.
@@ -105,6 +118,10 @@ export class DelegatesResource extends Resource {
         ? `mandates[0][party][in][${index}]`
         : `party[in][${index}]`;
       query[key] = party;
+    });
+
+    countries.forEach((code, index) => {
+      query[`constituency[in][${index}]`] = code;
     });
 
     if (onlyGovernment !== null) {
