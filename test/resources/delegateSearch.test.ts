@@ -128,6 +128,35 @@ describe("delegates.search", () => {
     expect(http.only().query.search).toBeUndefined();
   });
 
+  it("indexes each country under the constituency field", async () => {
+    await somes.delegates.search({
+      page: 1,
+      entriesPerPage: 20,
+      countries: ["DEU", "FRA"],
+    });
+
+    expect(http.only().query).toMatchObject({
+      "constituency[in][0]": "DEU",
+      "constituency[in][1]": "FRA",
+    });
+  });
+
+  it("combines the country filter with other filters", async () => {
+    await somes.delegates.search({
+      page: 1,
+      entriesPerPage: 20,
+      countries: ["DEU"],
+      parties: ["SPÖ"],
+      legisPeriods: ["XXVII"],
+    });
+
+    expect(http.only().query).toMatchObject({
+      "constituency[in][0]": "DEU",
+      "mandates[0][party][in][0]": "SPÖ",
+      "active_gps[in][0]": "XXVII",
+    });
+  });
+
   it("percent-encodes filter values", async () => {
     await somes.delegates.search({ page: 1, entriesPerPage: 20, parties: ["GRÜNE & co"] });
 
