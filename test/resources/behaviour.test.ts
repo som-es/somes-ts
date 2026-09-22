@@ -44,6 +44,18 @@ describe("response shaping", () => {
 
     await expect(somes.delegates.allActive()).resolves.toEqual(payload);
   });
+
+  it("treats a missing questions/status endpoint as disabled", async () => {
+    http.respondWith(null, 404);
+
+    await expect(somes.delegateQuestions.status()).resolves.toEqual({ enabled: false });
+  });
+
+  it("passes through an enabled questions/status response", async () => {
+    http.respondWith({ enabled: true });
+
+    await expect(somes.delegateQuestions.status()).resolves.toEqual({ enabled: true });
+  });
 });
 
 describe("token rotation on email changes", () => {

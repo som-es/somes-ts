@@ -1,4 +1,5 @@
-import { delegateQuestionsPath } from "../http/routes";
+import { ApiError } from "../http/client";
+import { delegateQuestionsPath, rootPath } from "../http/routes";
 import type {
   AdminDelegateQuestion,
   CreateDelegateQuestion,
@@ -6,6 +7,7 @@ import type {
   DelegateQuestionRecipient,
   DelegateQuestionsWithMaxPage,
   PublicDelegateQuestion,
+  QuestionsStatus,
   UpdateDelegateQuestion,
 } from "../types/delegateQuestion";
 import { Resource } from "./base";
@@ -29,6 +31,21 @@ export interface DelegateQuestionSearchOptions {
  * Q&A archive. See `delegateQuestionsPath` for why these currently 404.
  */
 export class DelegateQuestionsResource extends Resource {
+  /**
+   * Whether the question system is currently enabled server-side. The route
+   * may not exist yet, so a 404 is treated as disabled instead of thrown.
+   */
+  async status(): Promise<QuestionsStatus> {
+    try {
+      return await this.http.get<QuestionsStatus>(rootPath("/questions/status"));
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return { enabled: false };
+      }
+      throw error;
+    }
+  }
+
   all(language = "de"): Promise<PublicDelegateQuestion[]> {
     return this.http.get<PublicDelegateQuestion[]>(delegateQuestionsPath(this.country, ""), {
       query: { language },

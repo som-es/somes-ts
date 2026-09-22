@@ -71,3 +71,8 @@ export interface AdminDelegateQuestion {
   created_at: IsoDateTime;
   topics: UniqueTopic[];
 }
+
+/** Whether the question system is currently enabled server-side. */
+export interface QuestionsStatus {
+  enabled: boolean;
+}
